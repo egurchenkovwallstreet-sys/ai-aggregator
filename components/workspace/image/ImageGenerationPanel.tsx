@@ -6,6 +6,7 @@ import { AgentInputPanel } from "@/components/agent/AgentInputPanel";
 import { PromptConfirmation } from "@/components/agent/PromptConfirmation";
 import { AgentChatLog } from "@/components/workspace/image/AgentChatLog";
 import { GenerationPrice } from "@/components/workspace/image/GenerationPrice";
+import { ImageModelPicker } from "@/components/workspace/image/ImageModelPicker";
 import { ImageResultStub } from "@/components/workspace/image/ImageResultStub";
 import {
   creditsForModelPrice,
@@ -23,31 +24,25 @@ export function ImageGenerationPanel() {
   );
   const costCredits = creditsForModelPrice(model.priceRub);
   const flow = useImageGenerationFlow(model);
-  const selectId = "image-model-select";
+  const modelLabelId = "image-model-label";
 
   return (
     <div className="space-y-6">
       <article className="apple-panel overflow-hidden">
         <div className="grid gap-6 border-b apple-divider p-6 sm:grid-cols-[1fr_minmax(12rem,16rem)] sm:items-end sm:gap-8 sm:p-8">
           <div>
-            <label
-              htmlFor={selectId}
+            <p
+              id={modelLabelId}
               className="text-sm font-medium text-apple-text"
             >
               Модель
-            </label>
-            <select
-              id={selectId}
+            </p>
+            <ImageModelPicker
+              models={IMAGE_MODELS}
               value={modelId}
-              onChange={(event) => setModelId(event.target.value)}
-              className="field-control mt-2"
-            >
-              {IMAGE_MODELS.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.label}
-                </option>
-              ))}
-            </select>
+              labelId={modelLabelId}
+              onChange={setModelId}
+            />
           </div>
           <GenerationPrice
             priceRub={model.priceRub}
@@ -69,7 +64,10 @@ export function ImageGenerationPanel() {
             <AgentChatLog messages={flow.messages} pending={flow.agentBusy} />
           </div>
           {flow.error ? (
-            <p className="mt-3 text-sm text-[#ff3b30]" role="alert">
+            <p
+              className="mt-3 rounded-[12px] bg-[#ff3b30]/10 px-3 py-2 text-sm leading-relaxed text-[#c9342b]"
+              role="alert"
+            >
               {flow.error}
             </p>
           ) : null}

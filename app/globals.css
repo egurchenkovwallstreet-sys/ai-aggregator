@@ -28,8 +28,8 @@
   --color-apple-accent: var(--apple-accent);
   --color-apple-track: var(--apple-track);
   --font-sans:
-    var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "SF Pro Text",
-    "Helvetica Neue", "PingFang SC", sans-serif;
+    var(--font-inter), -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Helvetica Neue", "Segoe UI", sans-serif;
   --font-mono:
     var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
 }
@@ -54,8 +54,23 @@
     background: var(--apple-bg);
     color: var(--apple-text);
     font-family: var(--font-sans);
-    line-height: 1.6;
+    font-size: 1rem;
+    line-height: 1.55;
+    letter-spacing: -0.011em;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1,
+      "calt" 1;
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.022em;
+    font-weight: 600;
   }
 }
 
@@ -133,8 +148,11 @@
     border-radius: 12px;
     border: 1px solid var(--apple-hairline);
     background: var(--apple-surface);
-    padding-inline: 0.75rem;
-    font-size: 0.875rem;
+    padding-inline: 0.875rem;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    letter-spacing: -0.01em;
     color: var(--apple-text);
   }
 
