@@ -63,6 +63,8 @@ pnpm dev
 bun dev
 ```
 
+Главная `/` — четыре вкладки; **Изображения** (7.2): модель, агент, голос/текст, цена, демо-результат; остальные вкладки — заглушки. Реальная генерация — этап 5.
+
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
