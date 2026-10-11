@@ -3,6 +3,8 @@ name: Deploy staging
 on:
   push:
     branches: [main, master]
+  # Кнопка Run workflow в GitHub Actions
+  workflow_dispatch:
 
 concurrency:
   group: staging-deploy
@@ -21,6 +23,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT || 22 }}
+          envs: GITHUB_REF_NAME
           script: |
             set -euo pipefail
             cd /var/www/ai-aggregator
