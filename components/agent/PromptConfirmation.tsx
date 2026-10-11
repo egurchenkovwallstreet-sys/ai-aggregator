@@ -99,15 +99,18 @@ export function PromptConfirmation({
       aria-labelledby={titleId}
       aria-describedby={hintId}
       aria-busy={busy}
-      className="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6"
+      className="pt-2"
     >
       <h2
         id={titleId}
-        className="text-lg font-semibold tracking-tight text-zinc-900"
+        className="text-lg font-semibold tracking-[-0.02em] text-apple-text"
       >
         Финальный промпт
       </h2>
-      <p id={hintId} className="mt-1 text-sm leading-relaxed text-zinc-600">
+      <p
+        id={hintId}
+        className="mt-1 text-sm leading-[1.85] text-apple-text-secondary"
+      >
         Проверьте текст на русском. Перевод под модель начнётся только после
         подтверждения.
       </p>
@@ -163,7 +166,7 @@ function PromptBody({
 }: PromptBodyProps) {
   if (!editing) {
     return (
-      <blockquote className="mt-5 rounded-xl bg-zinc-50 px-4 py-3 text-base leading-relaxed text-zinc-900">
+      <blockquote className="mt-5 rounded-[18px] bg-apple-bg px-4 py-3 text-base leading-[1.85] text-apple-text-body">
         {draft}
       </blockquote>
     );
@@ -171,7 +174,7 @@ function PromptBody({
 
   return (
     <div className="mt-5">
-      <label htmlFor={fieldId} className="text-sm font-medium text-zinc-800">
+      <label htmlFor={fieldId} className="text-sm font-medium text-apple-text">
         Текст промпта
       </label>
       <textarea
@@ -190,9 +193,9 @@ function PromptBody({
             onConfirm();
           }
         }}
-        className="mt-2 min-h-32 w-full resize-y rounded-xl border border-zinc-300 bg-white px-3 py-2 text-base leading-relaxed text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900"
+        className="field-control mt-2 min-h-32 resize-y py-3 text-base leading-relaxed"
       />
-      <p className="mt-1 text-xs tabular-nums text-zinc-500">
+      <p className="mt-1 text-xs tabular-nums text-apple-text-tertiary">
         {draft.length} / {MAX_PROMPT_LENGTH}
       </p>
       {emptyError ? (
@@ -219,9 +222,6 @@ function PromptActions({
   onToggleEdit,
   onCancel,
 }: PromptActionsProps) {
-  const buttonClass =
-    "inline-flex min-h-11 items-center justify-center rounded-lg px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 disabled:opacity-60";
-
   return (
     <div
       className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap"
@@ -232,7 +232,7 @@ function PromptActions({
         type="button"
         onClick={onConfirm}
         disabled={busy}
-        className={`${buttonClass} bg-zinc-900 text-white hover:bg-zinc-800`}
+        className="btn-primary"
       >
         {busy ? "Подтверждаем…" : "Подтвердить"}
       </button>
@@ -241,7 +241,7 @@ function PromptActions({
         onClick={onToggleEdit}
         disabled={busy}
         aria-pressed={editing}
-        className={`${buttonClass} border border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50`}
+        className="btn-secondary"
       >
         Редактировать
       </button>
@@ -249,7 +249,7 @@ function PromptActions({
         type="button"
         onClick={onCancel}
         disabled={busy}
-        className={`${buttonClass} text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900`}
+        className="btn-secondary text-apple-text-secondary"
       >
         Отмена
       </button>

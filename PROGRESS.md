@@ -272,6 +272,16 @@
 
 ---
 
+## 12.10.2026 Полировка UI главной (Tailwind prod + Apple-style)
+
+- **Что сделано:** (1) Production-сборка: `@tailwindcss/postcss` + `postcss.config.mjs` — утилиты Tailwind снова попадают в CSS при `next build --webpack`. (2) Главная и вкладка «Изображения»: фон `#f5f5f7`, glass-шапка, сегмент-вкладки, единая `apple-panel` вместо россыпи карточек, акцент `#0071e3`, типографика с negative tracking (скилл Apple Liquid Glass).
+- **Файлы:** `app/globals.css`, `postcss.config.mjs`, `package.json`, `components/workspace/*`, `components/agent/AgentInputPanel.tsx`, `PromptConfirmation.tsx`
+- **Проблемы:** `/login` и `/profile` пока на старом zinc-макете — выровняем позже.
+- **Время:** ~50 мин
+- **Статус:** ✅ выполнено
+
+---
+
 ## ТЕКУЩИЙ СТАТУС
 
 - **Выполнено задач:** 29 из 71

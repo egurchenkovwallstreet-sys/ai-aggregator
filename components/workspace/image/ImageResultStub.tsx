@@ -3,28 +3,33 @@ type ImageResultStubProps = {
   modelLabel: string;
 };
 
-/** Заглушка результата до этапа 5.1 (реальная генерация). */
+/** Заглушка результата до этапа 5.1. */
 export function ImageResultStub({
   promptSummary,
   modelLabel,
 }: ImageResultStubProps) {
   return (
     <section
-      className="rounded-2xl border border-zinc-200 bg-white p-5"
+      className="apple-panel p-6 sm:p-8"
       aria-label="Результат генерации"
     >
-      <h3 className="text-sm font-medium text-zinc-800">Результат (демо)</h3>
+      <h3 className="text-lg font-semibold tracking-[-0.02em] text-apple-text">
+        Результат
+      </h3>
+      <p className="mt-1 text-sm text-apple-text-secondary">
+        Демо-превью · {modelLabel}
+      </p>
       <div
-        className="mt-4 flex aspect-[4/3] items-center justify-center rounded-xl bg-zinc-100"
+        className="mt-5 flex aspect-[4/3] items-center justify-center rounded-[18px] bg-gradient-to-br from-[#0a84ff]/15 via-apple-bg to-[#5e5ce6]/15"
         role="img"
         aria-label="Заглушка изображения"
       >
-        <p className="max-w-xs px-4 text-center text-sm text-zinc-600">
-          Здесь появится картинка от {modelLabel} после этапа 5
+        <p className="max-w-xs px-6 text-center text-sm leading-relaxed text-apple-text-body">
+          Здесь появится картинка после подключения API на этапе 5
         </p>
       </div>
-      <p className="mt-3 text-xs leading-relaxed text-zinc-500">
-        Промпт принят: «{promptSummary.slice(0, 120)}
+      <p className="mt-4 text-xs leading-relaxed text-apple-text-tertiary">
+        Промпт: «{promptSummary.slice(0, 120)}
         {promptSummary.length > 120 ? "…" : ""}»
       </p>
     </section>

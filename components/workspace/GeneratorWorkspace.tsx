@@ -34,7 +34,7 @@ function useTabKeyboard(
   );
 }
 
-/** Главный экран с четырьмя вкладками (задача 7.1, заглушки контента). */
+/** Главный экран с четырьмя вкладками. */
 export function GeneratorWorkspace() {
   const [activeId, setActiveId] = useState<ContentTabId>("image");
   const onKeyDown = useTabKeyboard(activeId, setActiveId);
@@ -43,12 +43,18 @@ export function GeneratorWorkspace() {
     CONTENT_TABS.find((tab) => tab.id === activeId) ?? CONTENT_TABS[0];
 
   return (
-    <div className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6 sm:py-10">
-      <p className="max-w-2xl text-sm leading-relaxed text-zinc-600">
-        Четыре режима генерации в одном сервисе. Сейчас — макет вкладок;
-        подключение нейросетей и оплаты добавим на этапах 5–6.
-      </p>
-      <div className="mt-6" onKeyDown={onKeyDown}>
+    <div className="mx-auto w-full max-w-[1080px] flex-1 px-[22px] pb-12 pt-8 sm:pb-16 sm:pt-10">
+      <header className="max-w-2xl">
+        <h1 className="text-[1.75rem] font-semibold leading-tight tracking-[-0.03em] text-apple-text sm:text-4xl">
+          Генерация контента
+        </h1>
+        <p className="mt-3 text-base leading-[1.85] text-apple-text-body">
+          Опишите задачу на русском — агент соберёт промпт. Цена видна до
+          запуска. Подключение моделей и оплаты — на этапах 5–6.
+        </p>
+      </header>
+
+      <div className="mt-8 sm:mt-10" onKeyDown={onKeyDown}>
         <ContentTabBar
           tabs={CONTENT_TABS}
           activeId={activeId}
@@ -56,7 +62,7 @@ export function GeneratorWorkspace() {
             if (isContentTabId(id)) setActiveId(id);
           }}
         />
-        <div className="mt-4">
+        <div className="mt-6 sm:mt-8">
           {activeId === "image" ? (
             <ImageGenerationPanel key="image-panel" />
           ) : (

@@ -10,6 +10,8 @@ export type AgentInputPanelProps = {
   onSubmit: (text: string) => void;
   disabled?: boolean;
   maxLength?: number;
+  /** Без отдельной «карточки» — внутри единой панели workspace. */
+  embedded?: boolean;
 };
 
 /** Переключение текст / голос и отправка реплики (задача 4.4). */
@@ -17,6 +19,7 @@ export function AgentInputPanel({
   onSubmit,
   disabled = false,
   maxLength = 4_000,
+  embedded = false,
 }: AgentInputPanelProps) {
   const [mode, setMode] = useState<AgentInputMode>("text");
   const [draft, setDraft] = useState("");
@@ -33,11 +36,14 @@ export function AgentInputPanel({
   return (
     <div className="space-y-4">
       <fieldset>
-        <legend id={modeLegendId} className="text-sm font-medium text-zinc-800">
+        <legend
+          id={modeLegendId}
+          className="text-sm font-medium text-apple-text"
+        >
           Режим ввода
         </legend>
         <div
-          className="mt-2 inline-flex rounded-lg border border-zinc-200 p-1"
+          className="mt-2 inline-flex rounded-full bg-apple-track p-1"
           role="radiogroup"
           aria-labelledby={modeLegendId}
         >
@@ -57,10 +63,16 @@ export function AgentInputPanel({
       </fieldset>
 
       {mode === "text" ? (
-        <div className="rounded-2xl border border-zinc-200 bg-white p-5">
+        <div
+          className={
+            embedded
+              ? "space-y-3"
+              : "rounded-[22px] bg-apple-surface p-5 shadow-[var(--apple-shadow-card)]"
+          }
+        >
           <label
             htmlFor={textareaId}
-            className="text-sm font-medium text-zinc-800"
+            className="text-sm font-medium text-apple-text"
           >
             Сообщение агенту
           </label>
@@ -77,13 +89,13 @@ export function AgentInputPanel({
                 submitText();
               }
             }}
-            className="mt-2 min-h-28 w-full resize-y rounded-xl border border-zinc-300 px-3 py-2 text-base text-zinc-900"
+            className="field-control mt-2 min-h-28 resize-y py-3 text-base leading-relaxed"
           />
           <button
             type="button"
             disabled={disabled || !draft.trim()}
             onClick={submitText}
-            className="mt-3 inline-flex min-h-11 items-center rounded-lg bg-zinc-900 px-4 text-sm font-medium text-white disabled:opacity-60"
+            className="btn-primary mt-1"
           >
             Отправить
           </button>
@@ -113,8 +125,10 @@ function ModeButton({ label, active, disabled, onClick }: ModeButtonProps) {
       aria-checked={active}
       disabled={disabled}
       onClick={onClick}
-      className={`min-h-11 rounded-md px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-900 disabled:opacity-60 ${
-        active ? "bg-zinc-900 text-white" : "text-zinc-700 hover:bg-zinc-50"
+      className={`min-h-11 rounded-full px-4 text-sm font-medium focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-apple-accent disabled:opacity-60 ${
+        active
+          ? "bg-apple-surface text-apple-text shadow-[var(--apple-shadow-card)]"
+          : "text-apple-text-secondary hover:text-apple-text"
       }`}
     >
       {label}
