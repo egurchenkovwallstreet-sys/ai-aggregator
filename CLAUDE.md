@@ -1,0 +1,64 @@
+<!-- frontend-standard-skills:nextjs START — do not edit between these markers, regenerate with `npx frontend-standard-skills add nextjs` -->
+
+# Frontend Contributor Rules — Next.js
+
+Applies to every change under `app/`, `components/`, `lib/`, and related directories in this Next.js (App Router) project. Self-contained — includes the framework-agnostic baseline plus Next.js-specific practice.
+
+## 1. Rendering model
+
+- **Default to Server Components.** Add `"use client"` only when a component genuinely needs browser APIs, event handlers, React state/effects, or a client-only library — and push that boundary as far down the tree as possible (wrap the interactive leaf, not the whole page).
+- Fetch data in Server Components / Route Handlers, close to where it's used. Avoid client-side `useEffect` fetch waterfalls for data available at request time.
+- Be deliberate with `fetch` caching (`cache`, `next: { revalidate }`) — don't accidentally cache per-user data or leave cacheable data uncached.
+- Use `<Suspense>` + streaming for slow, non-critical data so the rest of the page isn't blocked on the slowest fetch. Use `next/dynamic` to code-split heavy, non-critical Client Components.
+
+## 2. Accessibility (WCAG 2.1 AA)
+
+- Real semantic HTML inside JSX (`<button>`, `<nav>`, `<main>`, real `<label htmlFor>` + `<input>`) — no `<div onClick>`.
+- Every `<Image>` (always `next/image`, never a bare `<img>` without a specific reason) has descriptive, context-specific `alt` text, or `alt=""` if decorative.
+- Move focus to `<main>` (or the new heading) on client-side route transitions; mark the active nav link with `aria-current="page"`.
+- Custom modals implement `role="dialog"` + `aria-modal` + focus trap + `Escape`-to-close + focus restore — prefer a maintained headless primitive (Radix UI, React Aria) over hand-rolling.
+- Server Action forms: validate on the server (never trust client-only validation), surface errors via `aria-describedby`/`aria-invalid`/`role="alert"`, show a busy state (`aria-busy`) while `pending`.
+- Keep `eslint-plugin-jsx-a11y` (bundled in `eslint-config-next`) enabled and build-breaking in CI.
+- Color contrast ≥ 4.5:1 body / ≥ 3:1 large text; never convey state by color alone; respect `prefers-reduced-motion`; text sizing in `rem`/`em`.
+
+## 3. Core Web Vitals (target: LCP < 2.5s · CLS < 0.1 · INP < 200ms, per https://pagespeed.web.dev/)
+
+- `next/image` for every image; `priority` on the actual LCP image only (never lazy-loaded); explicit `width`/`height` or `fill` inside a sized parent always.
+- `next/font` (Google or local) for all web fonts — never a manual `<link>` to an external font host.
+- `next/script` with the correct `strategy` (`beforeInteractive`/`afterInteractive`/`lazyOnload`) for every third-party script.
+- Minimize `"use client"` surface area to control hydration cost; memoize expensive client computations; scope client state locally; debounce high-frequency handlers.
+- Prefer static generation or ISR (`revalidate`) over `force-dynamic` unless the route truly needs per-request data — TTFB gates LCP.
+- Measure against `next build && next start`, never `next dev`. Watch the build's First Load JS table for regressions; use `@next/bundle-analyzer` when a dependency looks heavy.
+
+## 4. Component & file conventions
+
+- App Router structure: `app/<route>/page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`; route groups `(name)/` for organization without affecting the URL.
+- Route segment folders: `kebab-case`. Component files: `PascalCase.tsx`. Everything else (`lib/`, `hooks/`, utils): `camelCase.ts`.
+- Shared, feature-agnostic components live in `components/ui/`; feature-only components live beside the feature/route. Shared components never import feature-specific code.
+- `strict: true` TypeScript, no `any`; explicit prop types; Server Action inputs validated (e.g. with Zod), never trusted implicitly.
+- DRY: markup/logic/values repeated 3+ times get extracted to a shared component, hook, or design token — not copy-pasted.
+
+## 5. UX consistency
+
+- `loading.tsx` and `error.tsx` present for every route with async data; loading UI approximates the loaded layout's dimensions (no CLS on swap-in); error UI is specific and offers retry where possible.
+- Mobile-first CSS, ≥ 44×44px touch targets, immediate (~100ms) feedback on every interactive action.
+
+## 6. Tooling & CI (build-breaking gates)
+
+- `next lint` (with `next/core-web-vitals` + `eslint-plugin-jsx-a11y`) and Prettier on every commit/CI run.
+- Vitest + React Testing Library for units/components (query by role/label, not implementation detail); Playwright (+ `@axe-core/playwright`) for e2e and accessibility on critical paths.
+- Lighthouse CI against a real `next build && next start`, with LCP/CLS/performance-score budgets as `error`-level assertions.
+- `web-vitals` (via `useReportWebVitals`) wired to analytics for real-user field data.
+- `README.md` updated in the same PR whenever setup, env vars, scripts, or folder conventions change.
+
+## 7. Before opening a PR
+
+- [ ] Every new `"use client"` has a specific, stated reason.
+- [ ] Keyboard-only walkthrough of the changed flow; zero new `jsx-a11y`/axe violations.
+- [ ] New images use `next/image` with dimensions and descriptive `alt`; LCP image has `priority`.
+- [ ] `loading.tsx`/`error.tsx` (or `<Suspense>`) cover new async UI.
+- [ ] No hardcoded design value duplicating an existing token; no logic duplicated 3+ times.
+- [ ] `next build` First Load JS checked for unexpected growth; PageSpeed checked if images/fonts/scripts/data-fetching changed.
+- [ ] README updated if setup/config/scripts changed.
+
+<!-- frontend-standard-skills:nextjs END -->

@@ -1,0 +1,34 @@
+name: Deploy staging
+
+on:
+  push:
+    branches: [main, master]
+
+concurrency:
+  group: staging-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    if: ${{ vars.DEPLOY_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Pull, build, migrate, reload
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            set -euo pipefail
+            cd /var/www/ai-aggregator
+            git fetch origin
+            git reset --hard "origin/${GITHUB_REF_NAME}"
+            export HUSKY=0
+            npm ci
+            npm run build
+            npm run db:migrate
+            pm2 startOrReload deploy/ecosystem.config.cjs
+            pm2 save
