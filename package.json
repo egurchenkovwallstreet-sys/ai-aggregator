@@ -11,6 +11,11 @@
     "format:check": "prettier --check .",
     "precommit": "npm run lint && npm run format:check",
     "db:migrate": "node scripts/db-migrate.mjs",
+    "voice:up": "docker compose -f services/voice/docker-compose.yml up -d --build",
+    "voice:down": "docker compose -f services/voice/docker-compose.yml down",
+    "voice:logs": "docker compose -f services/voice/docker-compose.yml logs -f --tail=100",
+    "voice:install": "powershell -ExecutionPolicy Bypass -File scripts/voice-install.ps1",
+    "voice:dev": "powershell -ExecutionPolicy Bypass -File scripts/voice-install.ps1 -Start",
     "prepare": "husky"
   },
   "dependencies": {

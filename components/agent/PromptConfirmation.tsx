@@ -43,12 +43,14 @@ function usePromptDraft(
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(prompt);
   const [emptyError, setEmptyError] = useState(false);
+  const [syncedPrompt, setSyncedPrompt] = useState(prompt);
 
-  useEffect(() => {
+  if (prompt !== syncedPrompt) {
+    setSyncedPrompt(prompt);
     setDraft(prompt);
     setEditing(false);
     setEmptyError(false);
-  }, [prompt]);
+  }
 
   useEffect(() => {
     if (editing) textareaRef.current?.focus();

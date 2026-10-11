@@ -192,9 +192,70 @@
 
 ---
 
+## 11.10.2026 Задача 3.9 — Стенд (деплой)
+
+- **Что сделано:** VPS Amsterdam `194.87.220.206`: Node 20, PostgreSQL 16 + pgvector, Nginx → PM2 → Next.js. Код залит, `npm run build`, миграции 001–003. Секреты в `/var/www/ai-aggregator/.env.production.local` (не в git). Проверка: HTTP 200 на `/`, `/login`, `/agent/preview`. Первый коммит локально; push в GitHub — при необходимости вручную с авторизацией.
+- **Файлы:** `deploy/*`, `.github/workflows/deploy.yml`, `deploy/remote-bootstrap.sh`, README, SPEC
+- **Проблемы:** автодеплой Actions не настроен (Secrets + deploy key); `pm2 startup` — мелкая ошибка парсинга, PM2 online
+- **Время:** ~40 мин
+- **Статус:** ✅ выполнено (стенд)
+
+---
+
+## 11.10.2026 Задача 3.6 — Перевод промпта после подтверждения
+
+- **Что сделано:** После подтверждения в `PromptConfirmation` — `POST /api/agent/translate`: LLM переводит русский промпт на английский для модели (`[[TRANSLATED_PROMPT]]`, повтор при отсутствии маркеров, temperature 0.25). Системный промпт учитывает `contentType` и опционально `targetModel`; узкая адаптация под модель — задача 3.7. Демо `/agent/preview` вызывает API и показывает EN-текст.
+- **Файлы:** `app/api/agent/translate/route.ts`, `server/agent/translate-prompt.ts`, `server/agent/translate-system-prompt.ts`, `server/agent/translate.schema.ts`, `server/agent/prompt-markers.ts`, `server/ai/provod-chat.ts`, `lib/agent/translate-prompt-client.ts`, `components/agent/PromptConfirmationDemo.tsx`, `README.md`, `SPEC.md`
+- **Проблемы:** нет
+- **Время:** ~25 мин
+- **Статус:** ✅ выполнено
+
+---
+
+## 11.10.2026 Задача 3.7 — Адаптация промпта под модель
+
+- **Что сделано:** После базового перевода (3.6) — второй LLM-шаг для профилей `nano-banana`, `veo`, `midjourney` (`resolveModelProfile` по `targetModel` и `contentType`). Правила в `adapt-system-prompt.ts`, парсинг `[[ADAPTED_PROMPT]]`. Ответ `/api/agent/translate`: `adaptedPrompt`, `modelProfile`, `promptForModel`. Демо `/agent/preview` — выбор модели и показ адаптированного промпта.
+- **Файлы:** `server/agent/model-profiles.ts`, `server/agent/adapt-prompt.ts`, `server/agent/adapt-system-prompt.ts`, `server/agent/translate-prompt.ts`, `server/agent/prompt-markers.ts`, `lib/agent/demo-model-options.ts`, `lib/agent/translate-prompt-client.ts`, `components/agent/PromptConfirmationDemo.tsx`, `README.md`, `SPEC.md`
+- **Проблемы:** нет
+- **Время:** ~25 мин
+- **Статус:** ✅ выполнено
+
+---
+
+## 11.10.2026 Задача 3.8 — Сохранение промптов в БД
+
+- **Что сделано:** После успешного перевода/адаптации `POST /api/agent/translate` пишет строку в `prompts`: `raw_input` из тела запроса, `final_prompt_ru`, `final_prompt_en` (= `promptForModel`), `target_model` (или «не выбрана»). В ответе — `promptId`. Хелпер `buildRawInputFromMessages` для диалога. Демо передаёт пример `rawInput`.
+- **Файлы:** `server/agent/save-user-prompt.ts`, `server/agent/translate-prompt.ts`, `server/agent/translate.schema.ts`, `app/api/agent/translate/route.ts`, `lib/agent/raw-input.ts`, `lib/agent/translate-prompt-client.ts`, `components/agent/PromptConfirmationDemo.tsx`, `README.md`, `SPEC.md`
+- **Проблемы:** нет
+- **Время:** ~20 мин
+- **Статус:** ✅ выполнено
+
+---
+
+## 11.10.2026 Задача 4.1 — Локальный голос (Voicy / OpenOcto / gateway)
+
+- **Что сделано:** Каталог `services/voice/`: Docker Compose + FastAPI gateway (`/health`, `/stt`, `/tts`) на faster-whisper + Piper (ru). Скрипты `scripts/voice-install.ps1|.sh`, npm `voice:up|down|logs|install|dev`. Документация по опциональной установке OpenOcto и Voicy. В Next.js: `server/voice/config.ts`, `GET /api/voice/health`. Env: `VOICE_GATEWAY_URL`.
+- **Файлы:** `services/voice/**`, `scripts/voice-install.*`, `server/voice/**`, `app/api/voice/health/route.ts`, `package.json`, `.env.example`, `README.md`, `SPEC.md`
+- **Проблемы:** первый STT/TTS тянет модели (нужны Docker или Python 3.11+); GPU не обязателен (CPU int8).
+- **Время:** ~35 мин
+- **Статус:** ✅ выполнено
+
+---
+
+## 11.10.2026 Задачи 4.2–4.5 — VoiceInput и режимы ввода
+
+- **Что сделано:** `VoiceInput` — MediaRecorder + `POST /api/voice/stt` → gateway; Web Speech для interim в реальном времени и fallback final при ошибке шлюза. `AgentInputPanel` — переключатель текст/голос. Демо `/agent/voice`. Сервер: `transcribe-audio.ts`, `app/api/voice/stt/route.ts`.
+- **Файлы:** `components/agent/VoiceInput.tsx`, `AgentInputPanel.tsx`, `AgentInputDemo.tsx`, `app/agent/voice/page.tsx`, `lib/voice/**`, `server/voice/transcribe-audio.ts`, `app/api/voice/stt/route.ts`, `README.md`, `SPEC.md`
+- **Проблемы:** для финальной расшифровки нужен поднятый voice-gateway или Chrome Web Speech
+- **Время:** ~40 мин
+- **Статус:** ✅ выполнено
+
+---
+
 ## ТЕКУЩИЙ СТАТУС
 
-- **Выполнено задач:** 18 из 70
-- **Текущий этап:** ЭТАП 3 — AI-агент; вставлена 3.9 (стенд)
-- **Следующая задача:** 3.9 Стенд — конфиги готовы; ждут GitHub login и доступ к серверу. После выкладки — 3.6
+- **Выполнено задач:** 27 из 71
+- **Текущий этап:** ЭТАП 4 завершён; далее **ЭТАП 5** — генерация контента
+- **Следующая задача:** 5.1 Создание API route /api/generate/image
+- **Стенд:** http://194.87.220.206
 - **Последнее обновление:** 11.10.2026

@@ -48,3 +48,7 @@ next-env.d.ts
 skills-src/
 skills-lock.json
 preview.html
+
+# локальный voice-gateway (Python venv и кэш моделей)
+services/voice/.venv/
+services/voice/data/

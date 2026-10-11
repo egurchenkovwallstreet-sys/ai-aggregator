@@ -1,0 +1,18 @@
+services:
+  voice-gateway:
+    build:
+      context: ./gateway
+    ports:
+      - "8080:8080"
+    environment:
+      VOICE_DATA_DIR: /data
+      WHISPER_MODEL: small
+      WHISPER_DEVICE: cpu
+      WHISPER_COMPUTE_TYPE: int8
+      PIPER_VOICE: ru_RU-dmitri-medium
+    volumes:
+      - voice-models:/data
+    restart: unless-stopped
+
+volumes:
+  voice-models:

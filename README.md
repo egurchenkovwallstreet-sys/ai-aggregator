@@ -10,6 +10,7 @@ Next.js (App Router) + TypeScript + Tailwind. Спецификация: `SPEC.md
 | `components/` | React-компоненты; общие UI — `components/ui/`                                 |
 | `lib/`        | Утилиты и код, безопасный для клиента и сервера                               |
 | `server/`     | Только сервер: БД, сервисы, интеграции (не импортировать в Client Components) |
+| `services/`   | Локальные sidecar-сервисы (голос STT/TTS — `services/voice/`)                 |
 
 Импорты: алиас `@/*` → корень проекта (см. `tsconfig.json`).
 
@@ -23,15 +24,17 @@ Middleware: защищённые префиксы требуют вход по e
 
 Анонимный доступ: cookie `device_id` + `VisitorBootstrap` создают пользователя в БД и JWT-сессию (миграция `003`). Бесплатные генерации — поле `free_generations_left` при создании.
 
-AI-агент: `POST /api/agent/dialog` — тело `{ contentType, messages[], targetModel? }`, ответ `{ reply, phase: "clarifying"|"ready"|"proposed", proposedPrompt, clarification }`. Финальный промпт на русском собирается после согласия (`[[PROPOSED_PROMPT]]`, `server/agent/proposed-prompt.ts`); перевод — только после подтверждения (задача 3.6). Нужны `PROVOD_AI_API_KEY`, `AGENT_MODEL`, сессия (в т.ч. гостевая).
+AI-агент: `POST /api/agent/dialog` — тело `{ contentType, messages[], targetModel? }`, ответ `{ reply, phase: "clarifying"|"ready"|"proposed", proposedPrompt, clarification }`. Финальный промпт на русском собирается после согласия (`[[PROPOSED_PROMPT]]`, `server/agent/proposed-prompt.ts`). После подтверждения в UI: `POST /api/agent/translate` — тело `{ contentType, rawInput, finalPromptRu, targetModel? }`, ответ `{ promptId, translatedPrompt, adaptedPrompt, promptForModel, modelProfile, … }`: перевод (`[[TRANSLATED_PROMPT]]`), адаптация под Nano Banana / Veo / Midjourney (`[[ADAPTED_PROMPT]]`), запись в таблицу `prompts` (`save-user-prompt.ts`: `raw_input`, `final_prompt_ru`, `final_prompt_en` = `promptForModel`). Сбор `rawInput` из диалога: `lib/agent/raw-input.ts`. Клиент: `lib/agent/translate-prompt-client.ts`. Нужны `PROVOD_AI_API_KEY`, `AGENT_MODEL`, `DATABASE_URL`, сессия (в т.ч. гостевая).
 
 Бесплатные генерации: `server/billing/generation-payment.service.ts` — сначала списывается `free_generations_left` (до 3 по умолчанию), затем кредиты; `SELECT FOR UPDATE`. Предпросмотр: `GET /api/user/generation-quota?cost=…` (нужна сессия, в т.ч. гостевая).
 
-Подтверждение промпта: `components/agent/PromptConfirmation.tsx` — кнопки Подтвердить / Редактировать / Отмена; предпросмотр `/agent/preview`. Перевод под модель — только после подтверждения (задача 3.6).
+Подтверждение промпта: `components/agent/PromptConfirmation.tsx` — кнопки Подтвердить / Редактировать / Отмена; предпросмотр `/agent/preview` (выбор модели, перевод + адаптация после «Подтвердить»).
 
 Профиль: `/profile` (кредиты, бесплатные генерации, реферальный код) — только после входа по email/Telegram.
 
 Вход: страница `/login`. Email — `POST /api/auth/magic-link`, колбэк `/auth/callback?token=…` (SMTP, миграция `002`). Telegram — виджет на `/login`, `POST /api/auth/telegram` (`TELEGRAM_BOT_TOKEN`, `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME`; домен сайта привязан к боту через @BotFather).
+
+Голос (этап 4): локальный шлюз — `services/voice/` (`npm run voice:up`). API: `GET /api/voice/health`, `POST /api/voice/stt` (multipart `audio`). UI: `VoiceInput`, `AgentInputPanel` (переключение текст/голос), демо `/agent/voice`. Web Speech — interim и fallback, если шлюз недоступен (`lib/voice/`).
 
 ## Стенд и деплой
 

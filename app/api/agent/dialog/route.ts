@@ -36,7 +36,9 @@ export async function POST(request: Request) {
     return NextResponse.json(result);
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Не удалось получить ответ агента.";
+      error instanceof Error
+        ? error.message
+        : "Не удалось получить ответ агента.";
     return NextResponse.json({ error: message }, { status: 502 });
   }
 }

@@ -10,11 +10,17 @@ type OpenAIChatResponse = {
   error?: { message?: string };
 };
 
+export type ChatCompletionOptions = {
+  temperature?: number;
+};
+
 /** Запрос chat/completions к provod.ai (OpenAI-compatible). */
 export async function createChatCompletion(
   messages: ChatMessage[],
+  options: ChatCompletionOptions = {},
 ): Promise<string> {
   const { apiKey, baseUrl, model } = getProvodConfig();
+  const temperature = options.temperature ?? 0.7;
 
   const response = await fetch(`${baseUrl}/chat/completions`, {
     method: "POST",
@@ -25,7 +31,7 @@ export async function createChatCompletion(
     body: JSON.stringify({
       model,
       messages,
-      temperature: 0.7,
+      temperature,
     }),
   });
 
